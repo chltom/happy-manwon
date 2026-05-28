@@ -1,5 +1,5 @@
 import type { Menu } from "@/types/restaurant"
-import type { Browser, Page } from "playwright-core"
+import type { Browser, Page } from "puppeteer-core"
 
 // Vercel 서버리스 함수 설정
 export const maxDuration = 60
@@ -15,35 +15,31 @@ interface CrawlResult {
 }
 
 async function launchBrowser(): Promise<Browser> {
-  const { chromium } = await import("playwright-core")
+  const puppeteer = (await import("puppeteer-core")).default
 
   if (process.env.VERCEL) {
-    const sparticuz = (await import("@sparticuz/chromium")).default
-    return chromium.launch({
-      args: sparticuz.args,
-      executablePath: await sparticuz.executablePath(),
+    const chromium = (await import("@sparticuz/chromium")).default
+    return puppeteer.launch({
+      args: chromium.args,
+      executablePath: await chromium.executablePath(),
       headless: true,
     })
   }
 
-  // 로컬 개발: 시스템 Chrome 우선, 없으면 기본 설치 경로
-  try {
-    return await chromium.launch({ channel: "chrome", headless: true })
-  } catch {
-    return await chromium.launch({ headless: true })
-  }
+  // 로컬 개발: 시스템 Chrome
+  return puppeteer.launch({ channel: "chrome", headless: true })
 }
 
 async function scrapeMenus(page: Page): Promise<{ name: string; price: number }[]> {
   await page.waitForSelector(".info_goods", { timeout: 8000 }).catch(() => null)
-  await page.waitForTimeout(500)
+  await new Promise((r) => setTimeout(r, 500))
 
   const moreBtn = await page.$("a.link_more")
   if (moreBtn) {
-    const text = await moreBtn.textContent()
+    const text = await moreBtn.evaluate((el) => el.textContent)
     if (text?.includes("메뉴")) {
       await moreBtn.click()
-      await page.waitForTimeout(1500)
+      await new Promise((r) => setTimeout(r, 1500))
     }
   }
 
