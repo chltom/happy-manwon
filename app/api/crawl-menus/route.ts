@@ -18,10 +18,13 @@ async function launchBrowser(): Promise<Browser> {
   const puppeteer = (await import("puppeteer-core")).default
 
   if (process.env.VERCEL) {
-    const chromium = (await import("@sparticuz/chromium")).default
+    const chromium = (await import("@sparticuz/chromium-min")).default
     return puppeteer.launch({
       args: chromium.args,
-      executablePath: await chromium.executablePath(),
+      // 바이너리를 런타임에 GitHub Releases에서 다운로드 (cold start 1회만)
+      executablePath: await chromium.executablePath(
+        "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar"
+      ),
       headless: true,
     })
   }
