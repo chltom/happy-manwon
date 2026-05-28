@@ -5,7 +5,7 @@ import Link from "next/link"
 import { RefreshCw, Utensils } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { loadRestaurants, loadVisits } from "@/lib/storage"
-import { recommend, isRecommendFallback } from "@/lib/recommend"
+import { recommend, isRecommendFallback, daysBetween } from "@/lib/recommend"
 import type { Restaurant, VisitRecord } from "@/types/restaurant"
 import { RestaurantCard } from "./restaurant-card"
 
@@ -110,7 +110,7 @@ export function RecommendationScreen() {
               key={r.id}
               restaurant={r}
               dimmed={isFallback}
-              visitedLabel={isFallback && lastVisit ? `${Math.round((new Date(today).getTime() - new Date(lastVisit).getTime()) / (1000 * 60 * 60 * 24))}일 전 방문` : undefined}
+              visitedLabel={isFallback && lastVisit ? `${Math.round(daysBetween(lastVisit, today))}일 전 방문` : undefined}
             />
           )
         })}

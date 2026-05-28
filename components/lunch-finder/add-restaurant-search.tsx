@@ -29,15 +29,21 @@ export function AddRestaurantSearch({ onSelect }: AddRestaurantSearchProps) {
     e.preventDefault()
     if (!query.trim()) return
     setLoading(true)
-    const params = new URLSearchParams({ q: query })
-    if (coords) {
-      params.set("lat", String(coords.lat))
-      params.set("lng", String(coords.lng))
+    try {
+      const params = new URLSearchParams({ q: query })
+      if (coords) {
+        params.set("lat", String(coords.lat))
+        params.set("lng", String(coords.lng))
+      }
+      const res = await fetch(`/api/kakao-search?${params}`)
+      if (!res.ok) throw new Error("search failed")
+      const data = await res.json()
+      setResults(data.places ?? [])
+    } catch {
+      setResults([])
+    } finally {
+      setLoading(false)
     }
-    const res = await fetch(`/api/kakao-search?${params}`)
-    const data = await res.json()
-    setResults(data.places ?? [])
-    setLoading(false)
   }
 
   return (
@@ -64,8 +70,8 @@ export function AddRestaurantSearch({ onSelect }: AddRestaurantSearchProps) {
 
       {results.length > 0 && (
         <div className="flex flex-col gap-2">
-          {results.map((place, i) => (
-            <Card key={i} className="cursor-pointer" onClick={() => onSelect(place)}>
+          {results.map((place) => (
+            <Card key={`${place.name}|${place.address}`} className="cursor-pointer" onClick={() => onSelect(place)}>
               <CardContent className="px-4 py-3">
                 <p className="text-sm font-medium">{place.name}</p>
                 <p className="text-xs text-muted-foreground">{place.address}</p>

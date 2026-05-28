@@ -10,7 +10,7 @@ export default async function RestaurantDetailPage({
 }) {
   const { id } = await params
   return (
-    <main className="flex flex-col min-h-svh max-w-md mx-auto px-4 py-6">
+    <main className="flex flex-col min-h-svh max-w-md mx-auto px-4 py-6 pb-20">
       <div className="flex items-center gap-2 mb-6">
         <Button variant="outline" size="sm" asChild>
           <Link href="/">

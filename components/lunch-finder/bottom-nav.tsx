@@ -16,7 +16,7 @@ export function BottomNav() {
     <nav className="fixed bottom-0 left-0 right-0 bg-background border-t border-border">
       <div className="flex max-w-md mx-auto">
         {tabs.map(({ href, label, Icon }) => {
-          const active = pathname === href
+          const active = pathname === href || (href !== "/" && pathname.startsWith(href + "/"))
           return (
             <Link
               key={href}

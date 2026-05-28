@@ -13,6 +13,13 @@ export async function GET(request: Request) {
   const lat = searchParams.get("lat")
   const lng = searchParams.get("lng")
 
+  if (!query.trim()) {
+    return Response.json({ error: "query required" }, { status: 400 })
+  }
+  if (lat && lng && (!Number.isFinite(Number(lat)) || !Number.isFinite(Number(lng)))) {
+    return Response.json({ error: "invalid coordinates" }, { status: 400 })
+  }
+
   const params = new URLSearchParams({ query, size: "10" })
   if (lat && lng) {
     params.set("y", lat)

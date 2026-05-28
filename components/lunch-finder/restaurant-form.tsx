@@ -29,6 +29,7 @@ export function RestaurantForm({ initialData, onSave }: RestaurantFormProps) {
   const [menuPrice, setMenuPrice] = useState("")
 
   const canAddMenu = menuName.trim().length > 0 && Number(menuPrice) > 0
+  const canSave = name.trim().length > 0
 
   function handleAddMenu() {
     setMenus([
@@ -104,7 +105,7 @@ export function RestaurantForm({ initialData, onSave }: RestaurantFormProps) {
         )}
       </div>
 
-      <Button onClick={handleSave}>저장</Button>
+      <Button onClick={handleSave} disabled={!canSave}>저장</Button>
     </div>
   )
 }
