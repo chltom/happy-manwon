@@ -2,6 +2,8 @@ export interface KakaoPlace {
   name: string
   address: string
   category: string
+  lat?: number
+  lng?: number
 }
 
 export interface KakaoDocument {
@@ -14,4 +16,19 @@ export interface KakaoDocument {
 export interface KakaoSearchResponse {
   documents: KakaoDocument[]
   meta: { total_count: number }
+}
+
+export interface KakaoNearbyDocument {
+  place_name: string
+  address_name: string
+  road_address_name: string
+  category_name: string
+  x: string
+  y: string
+  distance: string
+}
+
+export interface KakaoNearbyResponse {
+  documents: KakaoNearbyDocument[]
+  meta: { total_count: number; is_end: boolean }
 }
