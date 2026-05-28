@@ -3,7 +3,6 @@ import { ChevronRight } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import type { Restaurant } from "@/types/restaurant"
-import { PRICE_LIMIT } from "@/lib/recommend"
 
 interface RestaurantCardProps {
   restaurant: Restaurant
@@ -12,9 +11,7 @@ interface RestaurantCardProps {
 }
 
 export function RestaurantCard({ restaurant, dimmed, visitedLabel }: RestaurantCardProps) {
-  const cheapest = restaurant.menus
-    .filter((m) => m.price <= PRICE_LIMIT)
-    .sort((a, b) => a.price - b.price)[0]
+  const cheapest = restaurant.menus.slice().sort((a, b) => a.price - b.price)[0]
 
   return (
     <Link href={`/restaurants/${restaurant.id}`} className="block">

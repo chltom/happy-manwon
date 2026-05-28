@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { useRestaurants } from "@/hooks/use-restaurants"
-import { PRICE_LIMIT } from "@/lib/recommend"
 
 export function RestaurantList() {
   const { restaurants, remove } = useRestaurants()
@@ -26,9 +25,7 @@ export function RestaurantList() {
         </p>
       ) : (
         restaurants.map((r) => {
-          const cheapest = r.menus
-            .filter((m) => m.price <= PRICE_LIMIT)
-            .sort((a, b) => a.price - b.price)[0]
+          const cheapest = r.menus.slice().sort((a, b) => a.price - b.price)[0]
 
           if (confirmId === r.id) {
             return (
@@ -67,10 +64,12 @@ export function RestaurantList() {
                     <Badge variant="secondary">{r.category}</Badge>
                     <span className="text-xs text-muted-foreground">메뉴 {r.menus.length}개</span>
                   </div>
-                  {cheapest && (
+                  {cheapest ? (
                     <p className="text-xs text-muted-foreground">
                       최저 <span className="font-medium text-foreground">{cheapest.price.toLocaleString("ko-KR")}원</span>
                     </p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">메뉴를 직접 추가해보세요</p>
                   )}
                 </Link>
                 <Button
