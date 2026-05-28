@@ -1,4 +1,8 @@
 import type { Menu } from "@/types/restaurant"
+import type { Browser, Page } from "playwright-core"
+
+// Vercel 서버리스 함수 설정
+export const maxDuration = 60
 
 interface CrawlTarget {
   id: string
@@ -10,9 +14,19 @@ interface CrawlResult {
   menus: Menu[]
 }
 
-async function launchBrowser() {
-  const { chromium } = await import("playwright")
-  // 시스템 Chrome 우선, 없으면 Playwright 기본(headless shell)
+async function launchBrowser(): Promise<Browser> {
+  const { chromium } = await import("playwright-core")
+
+  if (process.env.VERCEL) {
+    const sparticuz = (await import("@sparticuz/chromium")).default
+    return chromium.launch({
+      args: sparticuz.args,
+      executablePath: await sparticuz.executablePath(),
+      headless: true,
+    })
+  }
+
+  // 로컬 개발: 시스템 Chrome 우선, 없으면 기본 설치 경로
   try {
     return await chromium.launch({ channel: "chrome", headless: true })
   } catch {
@@ -20,12 +34,10 @@ async function launchBrowser() {
   }
 }
 
-async function scrapeMenus(page: import("playwright").Page): Promise<{ name: string; price: number }[]> {
-  // 메뉴 데이터 DOM에 나타날 때까지 대기
+async function scrapeMenus(page: Page): Promise<{ name: string; price: number }[]> {
   await page.waitForSelector(".info_goods", { timeout: 8000 }).catch(() => null)
   await page.waitForTimeout(500)
 
-  // "메뉴 더보기" 버튼 클릭해서 전체 메뉴 표시
   const moreBtn = await page.$("a.link_more")
   if (moreBtn) {
     const text = await moreBtn.textContent()
@@ -50,16 +62,6 @@ async function scrapeMenus(page: import("playwright").Page): Promise<{ name: str
 }
 
 export async function POST(request: Request) {
-  let browser: import("playwright").Browser | null = null
-  try {
-    await import("playwright")
-  } catch {
-    return Response.json(
-      { error: "Playwright가 설치되지 않았습니다. `bunx playwright install chromium`을 실행하세요." },
-      { status: 503 }
-    )
-  }
-
   const body = await request.json()
   const targets: CrawlTarget[] = body.targets ?? []
 
@@ -67,11 +69,13 @@ export async function POST(request: Request) {
     return Response.json({ results: [] })
   }
 
+  let browser: Browser | null = null
+
   try {
     browser = await launchBrowser()
   } catch (e) {
     return Response.json(
-      { error: `브라우저를 실행할 수 없습니다. \`bunx playwright install chromium\`을 실행하세요. (${e})` },
+      { error: `브라우저를 실행할 수 없습니다. (${e})` },
       { status: 503 }
     )
   }

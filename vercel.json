@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "app/api/crawl-menus/route.ts": {
+      "memory": 1024
+    }
+  }
+}
