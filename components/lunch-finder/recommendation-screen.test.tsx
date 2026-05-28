@@ -29,6 +29,7 @@ function visitedDaysAgo(restaurantId: string, days: number): VisitRecord {
 }
 
 beforeEach(() => {
+  vi.clearAllMocks()
   vi.mocked(storage.loadRestaurants).mockReturnValue([])
   vi.mocked(storage.loadVisits).mockReturnValue([])
 })
@@ -75,6 +76,15 @@ describe("RecommendationScreen", () => {
     expect(screen.getByText("식당 a")).toBeInTheDocument()
   })
 
+  it("1만원 이하 메뉴가 없는 식당만 있을 때 → 추천 불가 안내 표시", async () => {
+    vi.mocked(storage.loadRestaurants).mockReturnValue([
+      makeRestaurant("a", [{ name: "고급코스", price: 50000 }]),
+    ])
+    render(<RecommendationScreen />)
+    expect(await screen.findByText(/추천 가능한 식당이 없어요/)).toBeInTheDocument()
+    expect(screen.getByRole("link", { name: /식당 추가/i })).toBeInTheDocument()
+  })
+
   it("'다음 추천' 클릭 → 이전 카드와 다른 식당 표시", async () => {
     vi.mocked(storage.loadRestaurants).mockReturnValue([
       makeRestaurant("a", [{ name: "메뉴", price: 8000 }]),
@@ -83,10 +93,15 @@ describe("RecommendationScreen", () => {
       makeRestaurant("d", [{ name: "메뉴", price: 8000 }]),
     ])
     render(<RecommendationScreen />)
-    await screen.findByText("식당 a")
+    await screen.findAllByText(/식당 [abcd]/)
+    const allNames = ["식당 a", "식당 b", "식당 c", "식당 d"]
+    const firstBatch = allNames.filter((name) => screen.queryByText(name))
+
     fireEvent.click(screen.getByRole("button", { name: /다음 추천/ }))
     await waitFor(() => {
-      expect(screen.queryByText("식당 a")).not.toBeInTheDocument()
+      firstBatch.forEach((name) => {
+        expect(screen.queryByText(name)).not.toBeInTheDocument()
+      })
     })
   })
 

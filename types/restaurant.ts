@@ -11,6 +11,8 @@ export interface Restaurant {
   address: string
   menus: Menu[]
   createdAt: number
+  lat?: number
+  lng?: number
 }
 
 export interface VisitRecord {

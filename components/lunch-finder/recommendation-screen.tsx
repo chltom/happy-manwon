@@ -77,6 +77,23 @@ export function RecommendationScreen() {
     )
   }
 
+  if (batch.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center flex-1 text-center py-16 gap-4">
+        <Utensils className="size-10 text-muted-foreground" />
+        <div>
+          <p className="text-sm font-medium">추천 가능한 식당이 없어요</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            1만원 이하 메뉴가 있는 식당을 추가해 보세요
+          </p>
+        </div>
+        <Button asChild>
+          <Link href="/restaurants/add">식당 추가하기</Link>
+        </Button>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-col flex-1">
       <div className="flex items-start justify-between mb-5">

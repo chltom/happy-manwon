@@ -8,6 +8,15 @@ function hasAffordableMenu(r: Restaurant): boolean {
   return r.menus.length > 0 && r.menus.some((m) => m.price <= PRICE_LIMIT)
 }
 
+function shuffle<T>(arr: T[]): T[] {
+  const a = arr.slice()
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
 export function daysBetween(a: string, b: string): number {
   return Math.abs(
     (new Date(a).getTime() - new Date(b).getTime()) / (1000 * 60 * 60 * 24)
@@ -51,7 +60,7 @@ export function recommend(
   })
 
   if (normal.length > 0) {
-    return normal.slice(0, MAX_RESULTS)
+    return shuffle(normal).slice(0, MAX_RESULTS)
   }
 
   // 폴백: 방문일 오래된 순

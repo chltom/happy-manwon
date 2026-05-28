@@ -44,6 +44,20 @@ Ideate → Define → Sketch → Plan → Build → Compound
 | `bun run test:watch` | Vitest watch |
 | `bun run test:e2e` | Playwright |
 
+### React 19 + Vitest 규칙
+
+- `beforeEach`에 항상 `vi.clearAllMocks()` 추가 — React 19 StrictMode가 effects를 2회 실행하므로 이전 테스트의 mock 호출 기록이 남으면 격리 테스트가 깨진다.
+- localStorage mock 연동 패턴: `saveX.mockImplementation((data) => { loadX.mockReturnValue([...data]) })` — StrictMode 2차 마운트 시 dedup·상태 읽기가 올바르게 동작한다.
+
+### Next.js + localStorage Hook 패턴
+
+`useState(() => localStorage...)` 금지. SSR에서 localStorage 없이 빈 값 반환 후 클라이언트 하이드레이션 불일치 발생. 항상 아래 패턴 사용:
+
+```ts
+const [data, setData] = useState<T[]>([])
+useEffect(() => { setData(loadData()) }, [])
+```
+
 ## Architecture
 
 순환 의존 방지를 위해 역방향 의존은 금지한다. 의존성이 적은 것부터 구현한다.
