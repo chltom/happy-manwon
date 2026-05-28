@@ -23,7 +23,7 @@ async function launchBrowser(): Promise<Browser> {
       args: chromium.args,
       // 바이너리를 런타임에 GitHub Releases에서 다운로드 (cold start 1회만)
       executablePath: await chromium.executablePath(
-        "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.tar"
+        "https://github.com/Sparticuz/chromium/releases/download/v149.0.0/chromium-v149.0.0-pack.x64.tar"
       ),
       headless: true,
     })
