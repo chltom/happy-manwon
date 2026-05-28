@@ -9,6 +9,11 @@ export function useRestaurants() {
 
   useEffect(() => {
     setRestaurants(loadRestaurants())
+    function onUpdate() {
+      setRestaurants(loadRestaurants())
+    }
+    window.addEventListener("restaurants-updated", onUpdate)
+    return () => window.removeEventListener("restaurants-updated", onUpdate)
   }, [])
 
   function add(data: Omit<Restaurant, "id" | "createdAt">) {
@@ -28,6 +33,14 @@ export function useRestaurants() {
     setRestaurants(next)
   }
 
+  function batchUpdateMenus(updates: { id: string; menus: Menu[] }[]) {
+    const map = new Map(updates.map((u) => [u.id, u.menus]))
+    const current = loadRestaurants()
+    const next = current.map((r) => (map.has(r.id) ? { ...r, menus: map.get(r.id)! } : r))
+    saveRestaurants(next)
+    setRestaurants(next)
+  }
+
   function remove(id: string) {
     const current = loadRestaurants()
     const next = current.filter((r) => r.id !== id)
@@ -35,5 +48,5 @@ export function useRestaurants() {
     setRestaurants(next)
   }
 
-  return { restaurants, add, updateMenus, remove }
+  return { restaurants, add, updateMenus, batchUpdateMenus, remove }
 }

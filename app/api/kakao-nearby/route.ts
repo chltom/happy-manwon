@@ -50,6 +50,7 @@ export async function GET(request: Request) {
         category: doc.category_name,
         lat: Number(doc.y),
         lng: Number(doc.x),
+        kakaoId: doc.id,
       })
     }
 

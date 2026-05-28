@@ -13,6 +13,7 @@ export interface Restaurant {
   createdAt: number
   lat?: number
   lng?: number
+  kakaoId?: string
 }
 
 export interface VisitRecord {

@@ -14,6 +14,7 @@ export function loadRestaurants(): Restaurant[] {
 
 export function saveRestaurants(restaurants: Restaurant[]): void {
   localStorage.setItem(RESTAURANTS_KEY, JSON.stringify(restaurants))
+  window.dispatchEvent(new CustomEvent("restaurants-updated"))
 }
 
 export function loadVisits(): VisitRecord[] {

@@ -4,6 +4,7 @@ export interface KakaoPlace {
   category: string
   lat?: number
   lng?: number
+  kakaoId?: string
 }
 
 export interface KakaoDocument {
@@ -19,6 +20,7 @@ export interface KakaoSearchResponse {
 }
 
 export interface KakaoNearbyDocument {
+  id: string
   place_name: string
   address_name: string
   road_address_name: string

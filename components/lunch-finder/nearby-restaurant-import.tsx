@@ -68,6 +68,7 @@ export function NearbyRestaurantImport({ onDone }: NearbyRestaurantImportProps) 
             menus: [],
             lat: place.lat,
             lng: place.lng,
+            kakaoId: place.kakaoId,
           })
           existing.add(key)
           added++
